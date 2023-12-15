@@ -1,0 +1,41 @@
+name: MSYS2 C++ CI
+
+on:
+  pull_request:
+    branches: [ "master" ]
+  push:
+    branches: [ "master" ]
+    paths-ignore:
+      - '**.md'
+      - '**.png'
+      - '**.jpg'
+      - '**.webp'
+  workflow_dispatch:
+  schedule:
+    - cron: "3 0 * * FRI"
+ 
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: UCRT64
+        update: true
+        install: git mingw-w64-ucrt-x86_64-gcc base-devel
+    - name: make
+      run: make
+    - name: make tests
+      run: make tests
+    - name: make coverage
+      run: make check-coverage
+    - name: run executable
+      run: |
+        ./dupeFinder test_resources
+        if ! ./dupeFinder test_resources | wc -l | grep 57; then
+          exit 1
+        fi

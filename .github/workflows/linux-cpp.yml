@@ -1,0 +1,35 @@
+name: Ubuntu C++ CI
+
+on:
+  pull_request:
+    branches: [ "master" ]
+  push:
+    branches: [ "master" ]
+    paths-ignore:
+      - '**.md'
+      - '**.png'
+      - '**.jpg'
+      - '**.webp'
+  workflow_dispatch:
+  schedule:
+    - cron: "3 0 * * FRI"
+ 
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: make
+      run: make
+    - name: make tests
+      run: make tests
+    - name: make coverage
+      run: make check-coverage
+    - name: run executable
+      run: |
+        ./dupeFinder test_resources
+        if ! ./dupeFinder test_resources | wc -l | grep 57; then
+          exit 1
+        fi
