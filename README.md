@@ -4,3 +4,4 @@ To help cleaning up storage.
 
 C++ so it's fast. JSON output so Python can process further.
 
+todo: install package in msys, cmake
