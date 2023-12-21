@@ -5,3 +5,19 @@ To help cleaning up storage.
 C++ so it's fast. JSON output so Python can process further.
 
 todo: install package in msys, cmake
+
+Steps to build Catch2 instead of amalgamated:
+
+```
+$ git clone https://github.com/catchorg/Catch2.git
+$ cd Catch2
+$ cmake -Bbuild -H. -DBUILD_TESTING=OFF
+#$ cmake --build build/ --target install --prefix just_for_config_hpp
+```
+
+We don't even need catch_user_config.hpp. An empty one does fine.
+
+`Catch2\build\src` is populated by build and contains the very same static libraries that would be installed, `libCatch2.a` and `libCatch2Main.a`.
+
+Copy these and the header (if any) into the source directory. I'll do this in GitHub actions.
+

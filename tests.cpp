@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_MAIN // provides main(); this line is required in only one .cpp file
+// #define CATCH_CONFIG_MAIN // provides main(); this line is required in only one .cpp file
 // #include "catch_amalgamated.hpp"
 #include <catch2/catch_all.hpp>
 #include "dupeFinder.h"

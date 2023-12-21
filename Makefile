@@ -12,9 +12,9 @@ sha256.o: src/sha256.cpp
 dupeFinderP.o: src/dupeFinder.cpp sha256.o
 	g++ $(INC) -c -O3 src/dupeFinder.cpp -o dupeFinderP.o
 
-tests: catch_amalgamated.o src/dupeFinder.cpp tests.o sha256.o
+tests: src/dupeFinder.cpp tests.o sha256.o
 	g++ $(INC) -c src/dupeFinder.cpp --coverage
-	g++ tests.o dupeFinder.o sha256.o catch_amalgamated.o --coverage -o tests
+	g++ tests.o dupeFinder.o sha256.o libCatch2Main.a libCatch2.a --coverage -o tests
 	./tests
 
 check-coverage: tests
@@ -23,8 +23,8 @@ check-coverage: tests
 tests.o: tests.cpp
 	g++ $(INC) -ICatch2/src -c -O3 tests.cpp
 
-catch_amalgamated.o: src/catch_amalgamated.cpp
-	g++ $(INC) -c src/catch_amalgamated.cpp
+# catch_amalgamated.o: src/catch_amalgamated.cpp
+# 	g++ $(INC) -c src/catch_amalgamated.cpp
 
 # catch2.o: catch2/catch_test_macros.cpp
 # 	g++ -Icatch2 -c catch2/catch_test_macros.cpp
