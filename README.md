@@ -21,3 +21,7 @@ We don't even need catch_user_config.hpp. An empty one does fine.
 
 Copy these and the header (if any) into the source directory. I'll do this in GitHub actions.
 
+todo:
+
+https://github.com/actions/upload-release-asset
+
