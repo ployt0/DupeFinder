@@ -34,7 +34,6 @@ catch2:
 	cp Catch2/build/src/libCatch2Main.a .
 	cp Catch2/build/src/libCatch2.a .
 	touch Catch2/src/catch2/catch_user_config.hpp
-.PHONY : catch2
 
 
 
