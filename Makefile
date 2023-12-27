@@ -12,7 +12,7 @@ sha256.o: src/sha256.cpp
 dupeFinderP.o: src/dupeFinder.cpp sha256.o
 	g++ $(INC) -c -O3 src/dupeFinder.cpp -o dupeFinderP.o
 
-tests: src/dupeFinder.cpp catch2 tests.o sha256.o
+tests: src/dupeFinder.cpp Catch2 tests.o sha256.o
 	g++ $(INC) -c src/dupeFinder.cpp --coverage
 	g++ tests.o dupeFinder.o sha256.o libCatch2Main.a libCatch2.a --coverage -o tests
 	./tests
@@ -27,7 +27,7 @@ tests.o: tests.cpp
 cleancatch:
 	rm -fr Catch2
 
-catch2:
+Catch2:
 	git clone https://github.com/catchorg/Catch2.git
 	cd Catch2 && cmake -Bbuild -G"Unix Makefiles" -H. -DBUILD_TESTING=OFF
 	cd Catch2/build && make
