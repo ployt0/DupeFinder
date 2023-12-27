@@ -1,15 +1,15 @@
 name: MSYS2 C++ CI
 
 on:
-  # pull_request:
-  #   branches: [ "master" ]
-  # push:
-  #   branches: [ "master" ]
-  #   paths-ignore:
-  #     - '**.md'
-  #     - '**.png'
-  #     - '**.jpg'
-  #     - '**.webp'
+  pull_request:
+    branches: [ "master" ]
+  push:
+    branches: [ "master" ]
+    paths-ignore:
+      - '**.md'
+      - '**.png'
+      - '**.jpg'
+      - '**.webp'
   workflow_dispatch:
   schedule:
     - cron: "3 0 * * FRI"
