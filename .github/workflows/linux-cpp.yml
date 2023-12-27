@@ -37,3 +37,10 @@ jobs:
         if ! ./dupeFinder test_resources | wc -l | grep 57; then
           exit 1
         fi
+
+    - name: Upload tested executable
+      uses: actions/upload-artifact@v3
+      with:
+        name: dupeFinder
+        path: dupeFinder
+  

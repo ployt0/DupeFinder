@@ -1,15 +1,15 @@
 name: MSYS2 C++ CI
 
 on:
-  pull_request:
-    branches: [ "master" ]
-  push:
-    branches: [ "master" ]
-    paths-ignore:
-      - '**.md'
-      - '**.png'
-      - '**.jpg'
-      - '**.webp'
+  # pull_request:
+  #   branches: [ "master" ]
+  # push:
+  #   branches: [ "master" ]
+  #   paths-ignore:
+  #     - '**.md'
+  #     - '**.png'
+  #     - '**.jpg'
+  #     - '**.webp'
   workflow_dispatch:
   schedule:
     - cron: "3 0 * * FRI"
@@ -21,11 +21,12 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: msys2/setup-msys2@v2
       with:
         msystem: UCRT64
-        update: true
+        # May cache better without updating.
+        # update: true
         install: git mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake base-devel
     - name: make
       run: make
@@ -33,9 +34,16 @@ jobs:
       run: make tests
     - name: make coverage
       run: make check-coverage
+
     - name: run executable
       run: |
         ./dupeFinder test_resources
         if ! ./dupeFinder test_resources | wc -l | grep 57; then
           exit 1
         fi
+
+    - name: Upload tested executable
+      uses: actions/upload-artifact@v3
+      with:
+        name: dupeFinder.exe
+        path: dupeFinder.exe
