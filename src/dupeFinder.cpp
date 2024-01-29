@@ -12,6 +12,7 @@
 #include <regex>
 #include <filesystem>
 #include <unordered_map>
+#include <unordered_set>
 #include "dupeFinder.h"
 #include "sha256.h"
 #include <algorithm>
@@ -107,15 +108,20 @@ std::string computeHash(const std::string& fileName) {
 }
 
 
-void addIfDupe(
+void attemptDirHash(
         std::unordered_map<std::string, std::vector<std::string>>& hashes,
-        const std::string &pathStr
+        std::unordered_set<std::string>& visitedPaths,
+        const std::string& pathStr,
+        const WalkOptions& walkOpts
 ) {
-    const std::string hex_str = computeHash(pathStr);
-    std::vector<std::string> &paths = hashes[hex_str];
-    // find returns end if it doesn't find pathStr:
-    if (std::find(paths.begin(), paths.end(), pathStr) == paths.end()) {
-        paths.push_back(pathStr);
+    if (!walkOpts.shallow) {
+        try {
+            shaWalk(hashes, visitedPaths, pathStr, walkOpts);
+        }
+        catch (std::filesystem::__cxx11::filesystem_error& e) {
+            if (!walkOpts.quiet)
+                std::cout << "ERROR " << e.what() << " " << std::endl;
+        }
     }
 }
 
@@ -129,42 +135,36 @@ void addIfDupe(
  */
 void shaWalk(
         std::unordered_map<std::string, std::vector<std::string>>& hashes,
+        std::unordered_set<std::string>& visitedPaths,
         const std::string& sourceDir,
-        const bool imagesOnly,
-        const bool quiet,
-        const bool shallow
+        const WalkOptions& walkOpts
 ) {
     std::filesystem::directory_iterator entry(sourceDir);
     std::filesystem::directory_iterator end;
+    if (visitedPaths.find(sourceDir) != visitedPaths.end()) {
+        return;
+    }
+    visitedPaths.insert(sourceDir);
     while (entry != end) {
+        const std::string pathStr = entry->path().string();
         if (std::filesystem::is_directory(entry->path())) {
-            if (!shallow) {
-                try {
-                    shaWalk(hashes, entry->path().string(),
-                            imagesOnly, quiet, false);
-                }
-                catch (std::filesystem::__cxx11::filesystem_error& e) {
-                    if (!quiet)
-                        std::cout << "ERROR " << e.what() << " " << std::endl;
-                }
-            }
-            entry++;
-        } else {
-            if (!imagesOnly || isGraphic(entry->path())) {
-                addIfDupe(hashes, entry->path().string());
-            }
-            entry++;
+            attemptDirHash(hashes, visitedPaths, pathStr, walkOpts);
+        } else if (!walkOpts.imagesOnly || isGraphic(entry->path())) {
+            const std::string hexStr = computeHash(pathStr);
+            std::vector<std::string> &paths = hashes[hexStr];
+            paths.push_back(pathStr);
         }
+        entry++;
     }
 }
 
 
-void showUsage(const char *progName) {
-    std::cout << "usage: " << progName <<" [-a] [-v] [-q] [-s] <root_directory(s)>" << std::endl;
-    std::cout << "   [-a] considers ALL files (default is just images)." << std::endl;
-    std::cout << "   [-v] VERBOSE. Output to include non-duplicates." << std::endl;
-    std::cout << "   [-q] QUIET. Doesn't report private directory errors." << std::endl;
-    std::cout << "   [-s] SHALLOW SPECIFIC. Doesn't search subdirectories." << std::endl;
-    std::cout << "   root_directory(s) will be searched for duplicate files." << std::endl;
+void showUsage(const char *progName, std::ostream& os) {
+    os << "usage: " << progName <<" [-a] [-v] [-q] [-s] <root_directory(s)>" << std::endl;
+    os << "   [-a] considers ALL files (default is just images)." << std::endl;
+    os << "   [-v] VERBOSE. Output to include non-duplicates." << std::endl;
+    os << "   [-q] QUIET. Doesn't report private directory errors." << std::endl;
+    os << "   [-s] SHALLOW SPECIFIC. Doesn't search subdirectories." << std::endl;
+    os << "   root_directory(s) will be searched for duplicate files." << std::endl;
 }
 

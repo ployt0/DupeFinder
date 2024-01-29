@@ -4,7 +4,14 @@
 #include <filesystem>
 #include <iostream>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
+
+struct WalkOptions {
+    const bool imagesOnly;
+    const bool quiet;
+    const bool shallow;
+};
 
 std::string escSeps(std::string s);
 
@@ -22,12 +29,11 @@ std::string computeHash(const std::string& fileName);
 
 void shaWalk(
         std::unordered_map<std::string, std::vector<std::string>>& hashes,
+        std::unordered_set<std::string>& visitedPaths,
         const std::string& sourceDir,
-        const bool imagesOnly,
-        const bool quiet,
-        const bool shallow
+        const WalkOptions& walkOpts
 );
 
-void showUsage(const char *progName);
+void showUsage(const char *progName, std::ostream& os);
 
 #endif // __DUPEFINDER_INCLUDED__

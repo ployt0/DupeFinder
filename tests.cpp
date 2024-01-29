@@ -98,10 +98,17 @@ const std::string sep1("/");
 const std::string sep2("/");
 #endif
 
+const WalkOptions STD_WALK_OPTS {
+    .imagesOnly = true,
+    .quiet = true,
+    .shallow = false
+};
+
 
 TEST_CASE( "Walking file hierarchy finds nested duplicates." ) {
     std::unordered_map<std::string, std::vector<std::string>> hashes{};
-    shaWalk(hashes, "test_resources", true, true, false);
+    std::unordered_set<std::string> visitedPaths;
+    shaWalk(hashes, visitedPaths, "test_resources", STD_WALK_OPTS);
     REQUIRE(hashes.size() == 11);
     std::vector<std::string> diningPaths = {
         safePath("test_resources\\icons\\alfresco.jpg", sep1),
@@ -115,8 +122,9 @@ TEST_CASE( "Walking file hierarchy finds nested duplicates." ) {
 
 TEST_CASE( "Walking same file hierarchy twice ignores duplication where it is due to identical paths." ) {
     std::unordered_map<std::string, std::vector<std::string>> hashes{};
-    shaWalk(hashes, "test_resources", true, true, false);
-    shaWalk(hashes, "test_resources", true, true, false);
+    std::unordered_set<std::string> visitedPaths;
+    shaWalk(hashes, visitedPaths, "test_resources", STD_WALK_OPTS);
+    shaWalk(hashes, visitedPaths, "test_resources", STD_WALK_OPTS);
     REQUIRE(hashes.size() == 11);
     std::vector<std::string> diningPaths = {
         safePath("test_resources\\icons\\alfresco.jpg", sep1),
@@ -128,9 +136,29 @@ TEST_CASE( "Walking same file hierarchy twice ignores duplication where it is du
 }
 
 
+TEST_CASE( "Walking same file hierarchy twice ignores duplication where it is due to identical paths at identical search roots." ) {
+    std::unordered_map<std::string, std::vector<std::string>> hashes{};
+    std::unordered_set<std::string> visitedPaths;
+    shaWalk(hashes, visitedPaths, "test_resources\\icons\\promoted", STD_WALK_OPTS);
+    shaWalk(hashes, visitedPaths, "test_resources\\icons\\promoted", STD_WALK_OPTS);
+    REQUIRE(hashes.size() == 4);
+    std::vector<std::string> diningPaths = {
+        safePath("test_resources\\icons\\promoted\\alfresco.jpg", sep1),
+        safePath("test_resources\\icons\\promoted\\dining.jpg", sep1),
+    };
+    REQUIRE(sortedVect(hashes["1e0d79ef6481214b9dca849fa7a7dd34b360d73cacface210a7ed571ab4da9b7"]) == sortedVect(diningPaths));
+}
+
+
 TEST_CASE( "Walking hierarchy has option to ignore subdirectories." ) {
     std::unordered_map<std::string, std::vector<std::string>> hashes{};
-    shaWalk(hashes, safePath("test_resources\\icons", sep1), true, true, true);
+    std::unordered_set<std::string> visitedPaths;
+    const WalkOptions RCRSV_WALK_OPTS {
+        .imagesOnly = true,
+        .quiet = true,
+        .shallow = true
+    };
+    shaWalk(hashes, visitedPaths, safePath("test_resources\\icons", sep1), RCRSV_WALK_OPTS);
     std::vector<std::string> path1 = sortedVect({
          safePath("test_resources\\icons\\artisan.jpg", sep1),
          safePath("test_resources\\icons\\beret.jpg", sep1),
@@ -154,7 +182,8 @@ TEST_CASE( "Walking hierarchy has option to ignore subdirectories." ) {
     REQUIRE(hashes["1e0d79ef6481214b9dca849fa7a7dd34b360d73cacface210a7ed571ab4da9b7"] == diningPaths);
 
     hashes.clear();
-    shaWalk(hashes, "test_resources", true, true, true);
+    visitedPaths.clear();
+    shaWalk(hashes, visitedPaths, "test_resources", RCRSV_WALK_OPTS);
     REQUIRE(hashes.size() == 0);
 }
 
@@ -166,6 +195,6 @@ TEST_CASE( "Walking hierarchy has option to ignore subdirectories." ) {
 
 TEST_CASE( "UI smoke test." ) {
     std::unordered_map<std::string, std::vector<std::string>> hashes{};
-    showUsage("sentinel.name");
+    showUsage("sentinel.name", std::cout);
 }
 
