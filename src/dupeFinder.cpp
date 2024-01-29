@@ -83,6 +83,9 @@ bool isGraphic(const std::filesystem::path& path) {
 }
 
 
+/**
+ * Computes SHA256 hash of file at the path provided.
+ */
 std::string computeHash(const std::string& fileName) {
     static const size_t BufferSize = 512*1024;
     static char buffer[BufferSize];
@@ -104,8 +107,16 @@ std::string computeHash(const std::string& fileName) {
 }
 
 
-bool listContainsPath(std::vector<std::string>& list, std::string path) {
-    return false;
+void addIfDupe(
+        std::unordered_map<std::string, std::vector<std::string>>& hashes,
+        const std::string &pathStr
+) {
+    const std::string hex_str = computeHash(pathStr);
+    std::vector<std::string> &paths = hashes[hex_str];
+    // find returns end if it doesn't find pathStr:
+    if (std::find(paths.begin(), paths.end(), pathStr) == paths.end()) {
+        paths.push_back(pathStr);
+    }
 }
 
 
@@ -140,12 +151,7 @@ void shaWalk(
             entry++;
         } else {
             if (!imagesOnly || isGraphic(entry->path())) {
-                const std::string hex_str = computeHash(entry->path().string());
-                std::vector<std::string> &pathList = hashes[hex_str];
-                if (std::find(pathList.begin(), pathList.end(), entry->path().string()) == pathList.end()) {
-                    pathList.push_back(entry->path().string());
-                }
-                // hashes[hex_str].push_back(entry->path().string());
+                addIfDupe(hashes, entry->path().string());
             }
             entry++;
         }

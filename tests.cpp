@@ -113,6 +113,21 @@ TEST_CASE( "Walking file hierarchy finds nested duplicates." ) {
 }
 
 
+TEST_CASE( "Walking same file hierarchy twice ignores duplication due to same paths." ) {
+    std::unordered_map<std::string, std::vector<std::string>> hashes{};
+    shaWalk(hashes, "test_resources", true, true, false);
+    shaWalk(hashes, "test_resources", true, true, false);
+    REQUIRE(hashes.size() == 11);
+    std::vector<std::string> diningPaths = {
+        safePath("test_resources\\icons\\alfresco.jpg", sep1),
+        safePath("test_resources\\icons\\promoted\\alfresco.jpg", sep1),
+        safePath("test_resources\\icons\\promoted\\dining.jpg", sep1),
+        safePath("test_resources\\resources\\alfresco.jpg", sep1),
+    };
+    REQUIRE(sortedVect(hashes["1e0d79ef6481214b9dca849fa7a7dd34b360d73cacface210a7ed571ab4da9b7"]) == sortedVect(diningPaths));
+}
+
+
 TEST_CASE( "Walking hierarchy has option to ignore subdirectories." ) {
     std::unordered_map<std::string, std::vector<std::string>> hashes{};
     shaWalk(hashes, safePath("test_resources\\icons", sep1), true, true, true);
