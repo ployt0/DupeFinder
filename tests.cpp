@@ -113,7 +113,7 @@ TEST_CASE( "Walking file hierarchy finds nested duplicates." ) {
 }
 
 
-TEST_CASE( "Walking same file hierarchy twice ignores duplication due to same paths." ) {
+TEST_CASE( "Walking same file hierarchy twice ignores duplication where it is due to identical paths." ) {
     std::unordered_map<std::string, std::vector<std::string>> hashes{};
     shaWalk(hashes, "test_resources", true, true, false);
     shaWalk(hashes, "test_resources", true, true, false);
@@ -163,4 +163,9 @@ TEST_CASE( "Walking hierarchy has option to ignore subdirectories." ) {
 // TEST_CASE( "Will fail, watch!" ) {
 //     REQUIRE(1 == 2);
 // }
+
+TEST_CASE( "UI smoke test." ) {
+    std::unordered_map<std::string, std::vector<std::string>> hashes{};
+    showUsage("sentinel.name");
+}
 

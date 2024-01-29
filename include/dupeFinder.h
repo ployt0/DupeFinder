@@ -28,6 +28,6 @@ void shaWalk(
         const bool shallow
 );
 
-void showUsage(char *argv[]);
+void showUsage(const char *progName);
 
 #endif // __DUPEFINDER_INCLUDED__

@@ -159,8 +159,8 @@ void shaWalk(
 }
 
 
-void showUsage(char *argv[]) {
-    std::cout << "usage: " << argv[0] <<" [-a] [-v] [-q] [-s] <root_directory(s)>" << std::endl;
+void showUsage(const char *progName) {
+    std::cout << "usage: " << progName <<" [-a] [-v] [-q] [-s] <root_directory(s)>" << std::endl;
     std::cout << "   [-a] considers ALL files (default is just images)." << std::endl;
     std::cout << "   [-v] VERBOSE. Output to include non-duplicates." << std::endl;
     std::cout << "   [-q] QUIET. Doesn't report private directory errors." << std::endl;
