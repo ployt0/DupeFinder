@@ -15,7 +15,7 @@ $ cmake -Bbuild -H. -DBUILD_TESTING=OFF
 #$ cmake --build build/ --target install --prefix just_for_config_hpp
 ```
 
-We don't even need catch_user_config.hpp. An empty one does fine.
+We don't even need the exact catch_user_config.hpp from it; an empty one works fine.
 
 `Catch2\build\src` is populated by build and contains the very same static libraries that would be installed, `libCatch2.a` and `libCatch2Main.a`.
 

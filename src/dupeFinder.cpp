@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include "dupeFinder.h"
 #include "sha256.h"
+#include <algorithm>
 
 
 std::string escSeps(std::string s) {
@@ -44,8 +45,8 @@ int jsonifyMap(
 
         os << "  \"" << key << "\": [" << std::endl;
         // todo, debating whether to double backslashes.
-        // Singlely, they work perfectly in UCRT64, bu vanish
-        // upon clicking the link, in Git Bash.
+        // Singly, they work perfectly in UCRT64, but vanish
+        // upon clicking the link shown in Git Bash.
         // Doubled up works slightly better, works with `jq '.'`,
         // but looks less natural.
         for (int i = 0; i < paths.size(); ++i) {
@@ -103,6 +104,11 @@ std::string computeHash(const std::string& fileName) {
 }
 
 
+bool listContainsPath(std::vector<std::string>& list, std::string path) {
+    return false;
+}
+
+
 /**
  * This is itself recursive because, at least using GNU CPP in Windows,
  * I am unable to detect symlinks, such as "\Users\me\AppData\Local\Application Data",
@@ -135,7 +141,11 @@ void shaWalk(
         } else {
             if (!imagesOnly || isGraphic(entry->path())) {
                 const std::string hex_str = computeHash(entry->path().string());
-                hashes[hex_str].push_back(entry->path().string());
+                std::vector<std::string> &pathList = hashes[hex_str];
+                if (std::find(pathList.begin(), pathList.end(), entry->path().string()) == pathList.end()) {
+                    pathList.push_back(entry->path().string());
+                }
+                // hashes[hex_str].push_back(entry->path().string());
             }
             entry++;
         }
@@ -144,7 +154,7 @@ void shaWalk(
 
 
 void showUsage(char *argv[]) {
-    std::cout << "usage: " << argv[0] <<" [-a] [-v] [-q] <root_directory(s)>" << std::endl;
+    std::cout << "usage: " << argv[0] <<" [-a] [-v] [-q] [-s] <root_directory(s)>" << std::endl;
     std::cout << "   [-a] considers ALL files (default is just images)." << std::endl;
     std::cout << "   [-v] VERBOSE. Output to include non-duplicates." << std::endl;
     std::cout << "   [-q] QUIET. Doesn't report private directory errors." << std::endl;
