@@ -72,7 +72,7 @@ TEST_CASE( "jsonifyMap prints all hashes when verbose." ) {
 //     return result;
 // }
 
-const std::string safePath(const char *s, const std::string sep2) {
+const std::string safePath(const char *s) {
     const char sep = std::filesystem::path::preferred_separator;
     std::string s2(s);
     std::replace( s2.begin(), s2.end(), '\\', sep);
@@ -111,10 +111,10 @@ TEST_CASE( "Walking file hierarchy finds nested duplicates." ) {
     shaWalk(hashes, visitedPaths, "test_resources", STD_WALK_OPTS);
     REQUIRE(hashes.size() == 11);
     std::vector<std::string> diningPaths = {
-        safePath("test_resources\\icons\\alfresco.jpg", sep1),
-        safePath("test_resources\\icons\\promoted\\alfresco.jpg", sep1),
-        safePath("test_resources\\icons\\promoted\\dining.jpg", sep1),
-        safePath("test_resources\\resources\\alfresco.jpg", sep1),
+        safePath("test_resources\\icons\\alfresco.jpg"),
+        safePath("test_resources\\icons\\promoted\\alfresco.jpg"),
+        safePath("test_resources\\icons\\promoted\\dining.jpg"),
+        safePath("test_resources\\resources\\alfresco.jpg"),
     };
     REQUIRE(sortedVect(hashes["1e0d79ef6481214b9dca849fa7a7dd34b360d73cacface210a7ed571ab4da9b7"]) == sortedVect(diningPaths));
 }
@@ -127,10 +127,10 @@ TEST_CASE( "Walking same file hierarchy twice ignores duplication where it is du
     shaWalk(hashes, visitedPaths, "test_resources", STD_WALK_OPTS);
     REQUIRE(hashes.size() == 11);
     std::vector<std::string> diningPaths = {
-        safePath("test_resources\\icons\\alfresco.jpg", sep1),
-        safePath("test_resources\\icons\\promoted\\alfresco.jpg", sep1),
-        safePath("test_resources\\icons\\promoted\\dining.jpg", sep1),
-        safePath("test_resources\\resources\\alfresco.jpg", sep1),
+        safePath("test_resources\\icons\\alfresco.jpg"),
+        safePath("test_resources\\icons\\promoted\\alfresco.jpg"),
+        safePath("test_resources\\icons\\promoted\\dining.jpg"),
+        safePath("test_resources\\resources\\alfresco.jpg"),
     };
     REQUIRE(sortedVect(hashes["1e0d79ef6481214b9dca849fa7a7dd34b360d73cacface210a7ed571ab4da9b7"]) == sortedVect(diningPaths));
 }
@@ -139,12 +139,12 @@ TEST_CASE( "Walking same file hierarchy twice ignores duplication where it is du
 TEST_CASE( "Walking same file hierarchy twice ignores duplication where it is due to identical paths at identical search roots." ) {
     std::unordered_map<std::string, std::vector<std::string>> hashes{};
     std::unordered_set<std::string> visitedPaths;
-    shaWalk(hashes, visitedPaths, "test_resources\\icons\\promoted", STD_WALK_OPTS);
-    shaWalk(hashes, visitedPaths, "test_resources\\icons\\promoted", STD_WALK_OPTS);
+    shaWalk(hashes, visitedPaths, safePath("test_resources\\icons\\promoted"), STD_WALK_OPTS);
+    shaWalk(hashes, visitedPaths, safePath("test_resources\\icons\\promoted"), STD_WALK_OPTS);
     REQUIRE(hashes.size() == 4);
     std::vector<std::string> diningPaths = {
-        safePath("test_resources\\icons\\promoted\\alfresco.jpg", sep1),
-        safePath("test_resources\\icons\\promoted\\dining.jpg", sep1),
+        safePath("test_resources\\icons\\promoted\\alfresco.jpg"),
+        safePath("test_resources\\icons\\promoted\\dining.jpg"),
     };
     REQUIRE(sortedVect(hashes["1e0d79ef6481214b9dca849fa7a7dd34b360d73cacface210a7ed571ab4da9b7"]) == sortedVect(diningPaths));
 }
@@ -158,14 +158,14 @@ TEST_CASE( "Walking hierarchy has option to ignore subdirectories." ) {
         .quiet = true,
         .shallow = true
     };
-    shaWalk(hashes, visitedPaths, safePath("test_resources\\icons", sep1), RCRSV_WALK_OPTS);
+    shaWalk(hashes, visitedPaths, safePath("test_resources\\icons"), RCRSV_WALK_OPTS);
     std::vector<std::string> path1 = sortedVect({
-         safePath("test_resources\\icons\\artisan.jpg", sep1),
-         safePath("test_resources\\icons\\beret.jpg", sep1),
+         safePath("test_resources\\icons\\artisan.jpg"),
+         safePath("test_resources\\icons\\beret.jpg"),
     });
     std::vector<std::string> path2 = sortedVect({
-         safePath("test_resources\\icons\\astronaut.jpg", sep1),
-         safePath("test_resources\\icons\\croissant.jpg", sep1),
+         safePath("test_resources\\icons\\astronaut.jpg"),
+         safePath("test_resources\\icons\\croissant.jpg"),
     });
     REQUIRE(sortedVect(hashes["a4e0c1efec3609beb79096d6c510f5f7892f3a2c88f5328ea4bc58dd4ea905d7"]) == path1);
     REQUIRE(sortedVect(hashes["00589e4d38f1c6071a5f901d2cb88a58274226e69f807bb7b7b1e21087ce79f1"]) == path2);
@@ -177,7 +177,7 @@ TEST_CASE( "Walking hierarchy has option to ignore subdirectories." ) {
             dupeCount++;
     }
     std::vector<std::string> diningPaths = {
-         safePath("test_resources\\icons\\alfresco.jpg", sep1) 
+         safePath("test_resources\\icons\\alfresco.jpg") 
     };
     REQUIRE(hashes["1e0d79ef6481214b9dca849fa7a7dd34b360d73cacface210a7ed571ab4da9b7"] == diningPaths);
 
