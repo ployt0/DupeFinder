@@ -3,6 +3,15 @@
 #include <vector>
 
 
+#ifndef GIT_COMMIT
+   #define GIT_COMMIT "unversioned"
+#endif
+
+#ifndef BUILD_DATE
+   #define BUILD_DATE "2024"
+#endif
+
+
 int main( int argc, char *argv[] ) {
     bool imagesOnly = true;
     bool verbose = false;
@@ -23,12 +32,12 @@ int main( int argc, char *argv[] ) {
         } else if (argv[i][1] == 's') {
             shallow = true;
         } else {
-            showUsage(argv[0], std::cout);
+            showUsage(argv[0], GIT_COMMIT, BUILD_DATE, std::cout);
             return 1;
         }
     }
     if ( argc < rootsIndex + 1 ) {
-        showUsage(argv[0], std::cout);
+        showUsage(argv[0], GIT_COMMIT, BUILD_DATE, std::cout);
         return 1;
     }
     std::unordered_map<std::string, std::vector<std::string>> hashes{};

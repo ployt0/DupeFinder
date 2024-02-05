@@ -136,7 +136,7 @@ TEST_CASE( "Walking same file hierarchy twice ignores duplication where it is du
 }
 
 
-TEST_CASE( "Walking same file hierarchy twice ignores duplication where it is due to identical paths at identical search roots." ) {
+TEST_CASE( "Walking same file hierarchy, twice, ignores duplication at the search root." ) {
     std::unordered_map<std::string, std::vector<std::string>> hashes{};
     std::unordered_set<std::string> visitedPaths;
     shaWalk(hashes, visitedPaths, safePath("test_resources\\icons\\promoted"), STD_WALK_OPTS);
@@ -195,6 +195,6 @@ TEST_CASE( "Walking hierarchy has option to ignore subdirectories." ) {
 
 TEST_CASE( "UI smoke test." ) {
     std::unordered_map<std::string, std::vector<std::string>> hashes{};
-    showUsage("sentinel.name", std::cout);
+    showUsage("sentinel.name", "sentinel.commit", "sentinel.date", std::cout);
 }
 

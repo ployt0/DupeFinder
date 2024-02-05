@@ -1,10 +1,12 @@
+GIT_COMMIT := $(shell git describe --always --dirty --match 'NOT A TAG')
+BUILD_DATE = $(shell date)
 INC=-Iinclude
 
 dupeFinder: main.o dupeFinderP.o sha256.o
 	g++ -O3 -static main.o dupeFinderP.o sha256.o -o dupeFinder
 
 main.o: main.cpp
-	g++ $(INC) -c main.cpp
+	g++ $(INC) -c main.cpp -DGIT_COMMIT='"$(GIT_COMMIT)"' -DBUILD_DATE='"$(BUILD_DATE)"'
 
 sha256.o: src/sha256.cpp
 	g++ -c -O3 src/sha256.cpp

@@ -159,12 +159,13 @@ void shaWalk(
 }
 
 
-void showUsage(const char *progName, std::ostream& os) {
+void showUsage(const char *progName, const char *commitHash, const char *buildDate, std::ostream& os) {
     os << "usage: " << progName <<" [-a] [-v] [-q] [-s] <root_directory(s)>" << std::endl;
-    os << "   [-a] considers ALL files (default is just images)." << std::endl;
-    os << "   [-v] VERBOSE. Output to include non-duplicates." << std::endl;
-    os << "   [-q] QUIET. Doesn't report private directory errors." << std::endl;
-    os << "   [-s] SHALLOW SPECIFIC. Doesn't search subdirectories." << std::endl;
-    os << "   root_directory(s) will be searched for duplicate files." << std::endl;
+    os << "     [-a] considers ALL files (default is just images)." << std::endl;
+    os << "     [-v] VERBOSE. Output to include non-duplicates." << std::endl;
+    os << "     [-q] QUIET. Doesn't report private directory errors." << std::endl;
+    os << "     [-s] SHALLOW SPECIFIC. Doesn't search subdirectories." << std::endl;
+    os << "     root_directory(s) will be searched for duplicate files." << std::endl;
+    os << "Compiled " << buildDate << " from commit " << commitHash << std::endl;
 }
 

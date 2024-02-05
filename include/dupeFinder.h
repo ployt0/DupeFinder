@@ -34,6 +34,6 @@ void shaWalk(
         const WalkOptions& walkOpts
 );
 
-void showUsage(const char *progName, std::ostream& os);
+void showUsage(const char *progName, const char *commitHash, const char *buildDate, std::ostream& os);
 
 #endif // __DUPEFINDER_INCLUDED__
